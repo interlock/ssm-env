@@ -1,13 +1,5 @@
 version: 2.1
 
-executors:
-  linux:
-    docker:
-      - image: circleci/golang:1.16
-  macos:
-    macos:
-      xcode: 11.4
-
 defaults: &defaults
   docker:
     - image: circleci/golang:1.16
@@ -19,7 +11,7 @@ workflows:
       - build:
           matrix:
             parameters:
-              platform: [linux, macos]
+              platform: ["linux", "darwin"]
               arch: ["amd64","arm64"]
 jobs:
   test:
@@ -30,10 +22,9 @@ jobs:
   build:
     parameters:
       platform:
-        type: executor
+        type: string
       arch:
         type: string
-    executor: << parameters.platform >>
     environment:
       - GOOS: << parameters.platform >>
       - GOARCH: << parameters.arch >>
