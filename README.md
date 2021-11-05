@@ -58,9 +58,10 @@ NEW_SECRET=super_secret_v2
 A common use case is to use `ssm-env` as a Docker ENTRYPOINT. You can copy and paste the following into the top of a Dockerfile:
 
 ```dockerfile
-RUN curl -L https://github.com/remind101/ssm-env/releases/download/v0.0.4/ssm-env > /usr/local/bin/ssm-env && \
+RUN curl -L https://github.com/remind101/ssm-env/releases/download/v0.0.5/ssm-env-linux-amd64 > /usr/local/bin/ssm-env && \
       cd /usr/local/bin && \
-      echo 4a5140b04f8b3f84d16a93540daa7bbd ssm-env | md5sum -c && \
+      echo babf40382bcd260f0d8d4575a32d5ec33fb08fefd29f12ffd800fbe738c41021  ssm-env
+ | sha256 -c && \
       chmod +x ssm-env
 ENTRYPOINT ["/usr/local/bin/ssm-env", "-with-decryption"]
 ```

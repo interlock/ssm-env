@@ -1,4 +1,13 @@
 version: 2.1
+
+executors:
+  linux:
+    docker:
+      - image: circleci/golang:1.16
+  macos:
+    macos:
+      xcode: 11.4
+
 defaults: &defaults
   docker:
     - image: circleci/golang:1.16
@@ -7,19 +16,32 @@ workflows:
   build-and-test:
     jobs:
       - test
-      - build
+      - build:
+          matrix:
+            parameters:
+              platform: [linux, macos]
+              arch: ["amd64","arm64"]
 jobs:
   test:
-    !!merge <<: *defaults
+    <<: *defaults
     steps:
       - checkout
       - run: make test
   build:
-    !!merge <<: *defaults
+    parameters:
+      platform:
+        type: executor
+      arch:
+        type: string
+    executor: << parameters.platform >>
+    environment:
+      - GOOS: << parameters.platform >>
+      - GOARCH: << parameters.arch >>
+    <<: *defaults
     steps:
       - checkout
       # Compile, and make sure it's not dynamically linked.
       - run: make bin/ssm-env && ! ldd bin/ssm-env
       - store_artifacts:
           path: bin/ssm-env
-          destination: ssm-env
+          destination: ssm-env-<< parameters.platform >>-<< parameters.arch >>
